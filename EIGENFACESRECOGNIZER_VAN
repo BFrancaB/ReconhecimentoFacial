@@ -20,6 +20,6 @@ for pathImage in paths:
         faceImage = cv2.resize(imagemCinza[y:y + h, x:x + w], (width, height))
         cv2.rectangle(imagemCinza, (x,y), (x + w, y+ h), (0,0,255, 2))
         id, trust = recognizer.predict(faceImage)
-        cv2.putText(imagemCinza, str(id), (x,y+ (h + 30)), font, 2, (0,100,255))
+        cv2.putText(imagemCinza, str(f"ID:{id}"), (x,y+ (h + 65)), font, 3, (255,255,0),2)
     cv2.imshow("Face", imagemCinza)
     cv2.waitKey(360)
