@@ -1,0 +1,40 @@
+import cv2
+import os
+import numpy as np
+
+
+classificador = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")  # Treinamento da Detecção de faces
+classificadorOlhos = cv2.CascadeClassifier("haarcascade_eye_default.xml")  # Treinamento da Detecção de faces
+
+# Teste para captura das fotos de treinamento
+# Formato: Pessoa.{id}.{numeroFoto}.jpg
+amostra = 1
+numeroAmostras = 25
+id = input('Digite seu Identificador')
+largura, altura = 220,220  # Controla o tamanho das imagens, pois os metodos necessitam que as imagens tenham o mesmo tamanho
+print("Capturando as faces")
+
+paths = [os.path.join('fotos_treinamento', f) for f in os.listdir('fotos_treinamento')]
+print("paths",paths)
+
+for pathImage in paths:
+    imagem = cv2.imread(pathImage) #abre a imagem
+    cv2.imshow("Face", imagem)  # Mostra a imagem
+    cv2.waitKey(360)  # Deixa ela aberta durante uma janela de tempo
+    print("np",np.average(imagem))
+    imagemCinza = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)  # Converte a imagem em escala de cinza
+    cv2.imshow("Face", imagemCinza)  # Mostra a imagem
+    cv2.waitKey(360)  # Deixa ela aberta durante uma janela de tempo
+    print("np", np.average(imagem))
+    facesDetectadas = classificador.detectMultiScale(imagemCinza,scaleFactor=1.5, minSize=(150, 150))
+    print("facesdetectadas",facesDetectadas)
+    for (x, y, l, a) in facesDetectadas:
+        cv2.rectangle(imagem, (x, y), (x + l, y + a), (0, 0, 255), 2)  # Desenha o retangulo vermelho ao redor da face
+        # Salvar as imagens
+        if np.average(imagemCinza) >0:
+            imagemFace = cv2.resize(imagemCinza[y:y + a, x:x + l], (largura, altura))
+            cv2.imshow("Face", imagemFace)  # Mostra a imagem
+            cv2.waitKey(360)  # Deixa ela aberta durante uma janela de tempo
+            cv2.imwrite("faces/pessoa." + str(id) + "." + str(amostra) + ".jpg", imagemFace)
+            print("[foto " + str(amostra) + "capturada com sucesso]")
+            amostra += 1;
