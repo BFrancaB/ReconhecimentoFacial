@@ -1,0 +1,25 @@
+import cv2
+import os
+import numpy as np
+
+classificador = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")  # Treinamento da Detecção de faces
+classificadorOlhos = cv2.CascadeClassifier("haarcascade_eye_default.xml")  # Treinamento da Detecção de faces
+recognizer = cv2.face.EigenFaceRecognizer_create()
+recognizer.read("EigenClassifier.yml")
+width, height = 220,220
+font = cv2.FONT_HERSHEY_COMPLEX
+
+paths = [os.path.join('fotos_teste', f) for f in os.listdir('fotos_teste')]
+print("paths",paths)
+
+for pathImage in paths:
+    imagem = cv2.imread(pathImage) #abre a imagem
+    imagemCinza = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)  # Converte a imagem em escala de cinza
+    facesDetectadas = classificador.detectMultiScale(imagemCinza,scaleFactor=1.5, minSize=(150, 150))
+    for(x, y, w, h) in facesDetectadas:
+        faceImage = cv2.resize(imagemCinza[y:y + h, x:x + w], (width, height))
+        cv2.rectangle(imagemCinza, (x,y), (x + w, y+ h), (0,0,255, 2))
+        id, trust = recognizer.predict(faceImage)
+        cv2.putText(imagemCinza, str(id), (x,y+ (h + 30)), font, 2, (0,100,255))
+    cv2.imshow("Face", imagemCinza)
+    cv2.waitKey(360)
