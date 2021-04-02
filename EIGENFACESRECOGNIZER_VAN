@@ -8,6 +8,7 @@ recognizer = cv2.face.EigenFaceRecognizer_create()
 recognizer.read("EigenClassifier.yml")
 width, height = 220,220
 font = cv2.FONT_HERSHEY_COMPLEX
+n = 0
 
 paths = [os.path.join('fotos_teste', f) for f in os.listdir('fotos_teste')]
 print("paths",paths)
@@ -17,9 +18,12 @@ for pathImage in paths:
     imagemCinza = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)  # Converte a imagem em escala de cinza
     facesDetectadas = classificador.detectMultiScale(imagemCinza,scaleFactor=1.5, minSize=(150, 150))
     for(x, y, w, h) in facesDetectadas:
+        n=n+1
         faceImage = cv2.resize(imagemCinza[y:y + h, x:x + w], (width, height))
         cv2.rectangle(imagemCinza, (x,y), (x + w, y+ h), (0,0,255, 2))
         id, trust = recognizer.predict(faceImage)
         cv2.putText(imagemCinza, str(f"ID:{id}"), (x,y+ (h + 65)), font, 3, (255,255,0),2)
     cv2.imshow("Face", imagemCinza)
     cv2.waitKey(360)
+
+print(f"Foram detectadas {n} faces em {len(paths)} imagems")
